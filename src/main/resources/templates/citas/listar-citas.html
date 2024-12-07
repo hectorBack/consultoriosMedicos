@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Lista de Citas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Citas Médicas</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" th:href="@{/citas}">Citas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/consultorios}">Consultorios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/doctores}">Doctores</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <h1 class="mb-4">Lista de Citas</h1>
+
+    <!-- Mensajes de éxito o error -->
+    <div th:if="${success}" class="alert alert-success">[[${success}]]</div>
+    <div th:if="${error}" class="alert alert-danger">[[${error}]]</div>
+
+    <!-- Filtros -->
+    <form th:action="@{/citas}" method="get" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label for="doctorId" class="form-label">Doctor</label>
+            <select id="doctorId" name="doctorId" class="form-select">
+                <option value="">-- Seleccionar --</option>
+                <option th:each="doctor : ${doctores}" th:value="${doctor.id}" th:text="${doctor.nombre}"></option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="fecha" class="form-label">Fecha</label>
+            <input type="date" id="fecha" name="fecha" class="form-control" th:value="${fecha}">
+        </div>
+        <div class="col-md-4">
+            <label for="consultorioId" class="form-label">Consultorio</label>
+            <select id="consultorioId" name="consultorioId" class="form-select">
+                <option value="">-- Seleccionar --</option>
+                <option th:each="consultorio : ${consultorios}" th:value="${consultorio.id}" th:text="${consultorio.numeroConsultorio}"></option>
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+    </form>
+
+    <!-- Tabla de citas -->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Doctor</th>
+            <th>Consultorio</th>
+            <th>Horario</th>
+            <th>Paciente</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cita : ${citas}">
+            <td th:text="${cita.id}"></td>
+            <td th:text="${cita.doctor.nombre}"></td>
+            <td th:text="${cita.consultorio.numeroConsultorio}"></td>
+            <td th:text="${#dates.format(cita.horario, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${cita.nombrePaciente}"></td>
+            <td>
+                <form th:action="@{/citas/cancelar/{id}(id=${cita.id})}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/citas/crear}" method="post" class="btn btn-success">Crear Cita</a>
+</div>
+
+<!-- Agregar el script de Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
